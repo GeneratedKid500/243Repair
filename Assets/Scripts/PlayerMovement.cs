@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -21,7 +23,9 @@ public class PlayerMovement : MonoBehaviour
     public float yMax;
 
     [Header("HitStun")]
-    public int HP = 100;
+    public Scrollbar hpBar;
+    public float HP = 100;
+    int maxHP;
     public Collider2D hurtBox;
     public float damageStun = 0.3f;
     public float fallStun = 0.75f;
@@ -32,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        maxHP = (int)HP;
         tf = GetComponent<Transform>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
@@ -55,13 +60,14 @@ public class PlayerMovement : MonoBehaviour
             xMoveSpeed = moveSpeeds.x;
             yMoveSpeed = moveSpeeds.y;
         }
+        UpdateUI();
     }
 
     void FixedUpdate()
     {
         //Movement Apply
         Vector3 movement = new Vector3(direction.x * xMoveSpeed, direction.y * yMoveSpeed, 0.0f);
-        animator.SetInteger("isMoving", Mathf.Abs((int)direction.x) + Mathf.Abs((int)direction.y));
+        if (canMove) animator.SetInteger("isMoving", Mathf.Abs((int)direction.x) + Mathf.Abs((int)direction.y));
         tf.position += movement * Time.deltaTime;
         tf.position = new Vector3(Mathf.Clamp(tf.position.x, xMin, xMax), Mathf.Clamp(tf.position.y, yMin, yMax), tf.position.z);
     }
@@ -83,19 +89,29 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             HP -= Mathf.RoundToInt(damage / 3);
+            if (HP <= 0)
+            {
+                StartCoroutine(KnockedOver());
+            }
         }
+
     }
 
     IEnumerator TakeDamage()
     {
-        if (PlayerAnimatorRef.instance.currentState == PlayerAnimatorRef.instance.fallState)
+        if (PlayerAnimatorRef.instance.currentState == PlayerAnimatorRef.instance.fallState ||
+            PlayerAnimatorRef.instance.currentState == PlayerAnimatorRef.instance.hurtState)
             yield break;
 
-        animator.SetBool("Hurt", true);
+        if (PlayerAnimatorRef.instance.currentState != PlayerAnimatorRef.instance.hurtState) animator.SetBool("Hurt", true);
         canMove = false;
         hurtBox.enabled = false;
 
+        Debug.Log("Boo");
+
         yield return new WaitForSeconds(damageStun);
+
+        Debug.Log("DOO");
 
         animator.SetBool("Hurt", false);
         canMove = true;
@@ -113,9 +129,21 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(fallStun);
 
+        if (HP <= 0)
+        {
+            SceneManager.LoadScene("BadEnding");   
+        }
+
         animator.Play("Idle");
         canMove = true;
         hurtBox.enabled = true;
+    }
+
+    void UpdateUI()
+    {
+        float hpf = HP / 100;
+        hpBar.size = hpf;
+        Debug.Log(hpf);
     }
 
     /// <summary>

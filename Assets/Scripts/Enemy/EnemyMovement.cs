@@ -178,7 +178,12 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSecondsRealtime(floorTime);
 
         if (HP <= 0)
+        {
+            GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerAttack>().enemiesKilled++;
+            EnemySpawning.instance.currentEnemies--;
             Destroy(this.gameObject);
+        }
+
 
         hurtbox.enabled = true;
         canMove = true;

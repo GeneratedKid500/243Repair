@@ -7,8 +7,10 @@ public class PlayerAttack : MonoBehaviour
     public GameObject[] attackHitBoxes;
     public float attackWindow = 0.2f;
 
-    public bool attack2Unlocked = true;
-    public bool attack3Unlocked = true;
+    public bool attack2Unlocked = false;
+    public bool attack3Unlocked = false;
+
+    public int enemiesKilled = 0;
 
     [HideInInspector] public bool isBlocking;
 
@@ -27,6 +29,20 @@ public class PlayerAttack : MonoBehaviour
         GetAttackInput();
 
         GetBlockInput();
+    }
+
+    void LateUpdate()
+    {
+        if (enemiesKilled >= 2 && !attack2Unlocked)
+        {
+            attack2Unlocked = true;
+            EnemySpawning.instance.Unlocked2();
+        }
+        else if (enemiesKilled >= 10 && !attack3Unlocked)
+        {
+            attack3Unlocked = true;
+            EnemySpawning.instance.Unlocked3();
+        }
     }
 
     void GetAttackInput()

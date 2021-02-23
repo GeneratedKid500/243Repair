@@ -262,7 +262,7 @@ MonoBehaviour:
   - {fileID: 2264691893682244886}
   - {fileID: 2264691894386655729}
   timeBetweenAttacks: 0.5
-  HP: 30
+  HP: 11
   stunTime: 0.2
   floorTime: 1
   hurtbox: {fileID: 2264691894465508161}
