@@ -18,8 +18,14 @@ public class PlayerAttack : MonoBehaviour
     PlayerMovement playerMovement;
     float attackTimer;
 
+    [Header("Sounds")]
+    AudioSource audioS;
+    public AudioClip punch1;
+    public AudioClip punch2;
+
     void Start()
     {
+        audioS = GetComponent<AudioSource>();
         playerMovement = GetComponent<PlayerMovement>();
         animator = GetComponentInChildren<Animator>();
     }
@@ -56,6 +62,8 @@ public class PlayerAttack : MonoBehaviour
                 animator.SetBool("Attack", true);
                 animator.SetBool("Attack3", false);
 
+                audioS.PlayOneShot(punch1);
+
                 attackHitBoxes[0].SetActive(true);
                 attackHitBoxes[2].SetActive(false);
 
@@ -66,6 +74,8 @@ public class PlayerAttack : MonoBehaviour
                 animator.SetBool("Attack2", true);
                 animator.SetBool("Attack", false);
 
+                audioS.PlayOneShot(punch1);
+
                 attackHitBoxes[1].SetActive(true);
                 attackHitBoxes[0].SetActive(false);
 
@@ -75,6 +85,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 animator.SetBool("Attack3", true);
                 animator.SetBool("Attack2", false);
+
+                audioS.PlayOneShot(punch2);
 
                 attackHitBoxes[2].SetActive(true);
                 attackHitBoxes[1].SetActive(false);

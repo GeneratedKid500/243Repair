@@ -30,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
     public float damageStun = 0.3f;
     public float fallStun = 0.75f;
 
+    public Text DEBUGA;
+    public Text debugB;
 
     Animator animator;
     public bool facingLeft = false;
@@ -144,6 +146,9 @@ public class PlayerMovement : MonoBehaviour
         float hpf = HP / 100;
         hpBar.size = hpf;
         Debug.Log(hpf);
+
+        DEBUGA.text = EnemySpawning.instance.currentEnemies.ToString();
+        debugB.text = GetComponent<PlayerAttack>().enemiesKilled.ToString();
     }
 
     /// <summary>

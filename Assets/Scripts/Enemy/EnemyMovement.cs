@@ -27,13 +27,22 @@ public class EnemyMovement : MonoBehaviour
     float attackTimer;
 
     [Header("Being Hit")]
-    public int HP;
+    public float hP = 11;
     public float stunTime;
     public int floorTime;
     public Collider2D hurtbox;
 
+    [Header("Sounds")]
+    AudioSource audioS;
+    public AudioClip punch1;
+    public AudioClip punch2;
+    public AudioClip getHurt;
+    public AudioClip getDie;
+
     void Start()
     {
+        audioS = GetComponent<AudioSource>();
+
         tf = transform;
         target = Object.FindObjectOfType<PlayerMovement>().transform;
         animator = GetComponentInChildren<Animator>();
@@ -55,7 +64,6 @@ public class EnemyMovement : MonoBehaviour
         {
             moveSpeed = 0;
         }
-
     }
 
     void FixedUpdate()
@@ -98,6 +106,8 @@ public class EnemyMovement : MonoBehaviour
                 attackHitboxes[0].SetActive(true);
                 attackHitboxes[2].SetActive(false);
 
+                audioS.PlayOneShot(punch1);
+
                 attackTimer = timeBetweenAttacks;
                 attackCounter += 1;
             }
@@ -109,14 +119,19 @@ public class EnemyMovement : MonoBehaviour
                 attackHitboxes[1].SetActive(true);
                 attackHitboxes[0].SetActive(false);
 
+                audioS.PlayOneShot(punch1);
+
+
                 attackTimer = timeBetweenAttacks;
                 attackCounter += 1;
 
             }
-            else if (animRef.currentState == animRef.punch2State && attackCounter >= 6)
+            else if (animRef.currentState == animRef.punch2State && attackCounter >= 4)
             {
                 animator.SetBool("Attack3", true);
                 animator.SetBool("Attack2", false);
+
+                audioS.PlayOneShot(punch2);
 
                 attackHitboxes[2].SetActive(true);
                 attackHitboxes[1].SetActive(false);
@@ -124,7 +139,7 @@ public class EnemyMovement : MonoBehaviour
                 attackTimer = timeBetweenAttacks;
             }
             else if (animRef.currentState == animRef.punch3State ||
-            animRef.currentState == animRef.punch2State && attackCounter < 6)
+            animRef.currentState == animRef.punch2State && attackCounter < 4)
             {
                 animator.SetBool("Attack2", false);
                 animator.SetBool("Attack3", false);
@@ -145,13 +160,18 @@ public class EnemyMovement : MonoBehaviour
     {
         canMove = false;
         Debug.Log(damage);
-        HP -= damage;
-        if (HP > 0 && damage < 3)
+        hP -= damage;
+        if (hP > 0 && damage < 3)
         {
-            StartCoroutine(TakeDamage());
+            if (animRef.currentState != animRef.fallState)
+            {
+                audioS.PlayOneShot(getHurt);
+                StartCoroutine(TakeDamage());
+            }
         }
         else
         {
+            audioS.PlayOneShot(getDie);
             StartCoroutine(KnockOver());
         }
     }
@@ -171,19 +191,17 @@ public class EnemyMovement : MonoBehaviour
 
     IEnumerator KnockOver()
     {
-        canMove = false;
         animator.Play("Fall");
         hurtbox.enabled = false;
 
-        yield return new WaitForSecondsRealtime(floorTime);
+        yield return new WaitForSeconds(floorTime);
 
-        if (HP <= 0)
+        if (!(hP > 0))
         {
-            GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerAttack>().enemiesKilled++;
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<PlayerAttack>().enemiesKilled++;
             EnemySpawning.instance.currentEnemies--;
-            Destroy(this.gameObject);
+            GameObject.Destroy(gameObject);
         }
-
 
         hurtbox.enabled = true;
         canMove = true;

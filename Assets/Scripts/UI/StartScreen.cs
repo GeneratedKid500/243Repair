@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class StartScreen : MonoBehaviour
 {
+    AudioSource aS;
+
     public CanvasGroup mattGroup;
     public CanvasGroup mattText;
 
@@ -26,6 +28,8 @@ public class StartScreen : MonoBehaviour
 
     void Start()
     {
+        aS = GetComponent<AudioSource>();
+
         mattGroup.enabled = true;
         mattText.enabled = true;
         protagGroup.enabled = true;
