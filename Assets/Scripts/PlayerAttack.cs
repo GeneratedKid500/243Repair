@@ -22,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
     AudioSource audioS;
     public AudioClip punch1;
     public AudioClip punch2;
+    public AudioClip randomLine;
 
     void Start()
     {
@@ -35,6 +36,12 @@ public class PlayerAttack : MonoBehaviour
         GetAttackInput();
 
         GetBlockInput();
+
+        int i = Random.Range(0, 100001);
+        if (i == 7563)
+        {
+            audioS.PlayOneShot(randomLine);
+        }
     }
 
     void LateUpdate()

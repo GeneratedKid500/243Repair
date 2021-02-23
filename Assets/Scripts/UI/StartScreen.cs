@@ -26,6 +26,11 @@ public class StartScreen : MonoBehaviour
     bool transitionalState = false;
     bool protagState = false;
 
+    [Header("Audio")]
+    public AudioClip mattClip;
+    public AudioClip protagClip;
+
+
     void Start()
     {
         aS = GetComponent<AudioSource>();
@@ -118,6 +123,10 @@ public class StartScreen : MonoBehaviour
                 else
                 {
                     mattText.alpha += fadeInTime;
+                    if (!aS.isPlaying)
+                    {
+                        aS.PlayOneShot(mattClip);
+                    }
                 }
             }
             else
@@ -154,11 +163,18 @@ public class StartScreen : MonoBehaviour
                     else
                     {
                         protagTopText.alpha += fadeInTime;
+
+                        if (!aS.isPlaying)
+                        {
+                            aS.PlayOneShot(protagClip);
+                        }
                     }
                 }
                 else
                 {
                     protagBottomText.alpha += fadeInTime;
+
+
                 }
             }
             else
@@ -188,7 +204,6 @@ public class StartScreen : MonoBehaviour
             }
             else if (protagBottomText.alpha <= 0)
             {
-                pressToBegin.transform.position = new Vector3(0, 0, 0);
                 pressToBegin.GetComponent<Text>().text = "Press X to begin...";
             }
         }
